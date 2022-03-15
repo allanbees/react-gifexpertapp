@@ -4,8 +4,14 @@ import { AddCategory } from "../../components/AddCategory";
 
 describe('Tests of <AddCategory />', () => { 
 
-    const setCategories = () => {};
-    const wrapper = shallow(<AddCategory setCategories = { setCategories } />);
+    // const setCategories = () => {};
+    const setCategories = jest.fn();
+    let wrapper;
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        wrapper = shallow(<AddCategory setCategories = { setCategories } />);
+    });
 
     test('Must render correctly', () => {
 
@@ -25,5 +31,27 @@ describe('Tests of <AddCategory />', () => {
     });
 
 
+    test('Must not post info on submit', () => {
+
+        wrapper.find('form').simulate('submit', { preventDefault(){} });
+
+        expect( setCategories ).not.toHaveBeenCalled();
+
+    });
+
+    test('Must call setCategories and clean the text box', () => { 
+
+        const value = 'Peaky Blinders';
+
+        const input = wrapper.find('input');
+        input.simulate('change', { target: { value }});
+
+        wrapper.find('form').simulate('submit', { preventDefault(){} });
+
+        expect( setCategories ).toHaveBeenCalled();
+        
+        expect( wrapper.find('input').prop('value') ).toBe('');
+
+    });
 
 })
